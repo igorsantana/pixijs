@@ -14,7 +14,7 @@ function convertTagToFirework(tag) {
 		},
 		{}
 	);
-	if (!begin || !type || !colour || !duration || !position) {
+	if (typeof begin == 'undefined' || !type || !colour || !duration || !position) {
 		return undefined;
 	}
 	return new Firework(begin, type, colour, duration, position, velocity);
@@ -33,6 +33,7 @@ async function convertXmlToClasses(xmlFile) {
 		);
 		const parsedFrameworks = fireworks.filter((result) => !!result);
 		const hasErrorInConversion = fireworks.length !== parsedFrameworks.length;
+		console.log(hasErrorInConversion)
 		if (!!hasErrorInConversion) {
 			throw Error;
 		}
