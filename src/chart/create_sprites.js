@@ -2,7 +2,7 @@ import { Sprite } from "pixi.js";
 
 function createSprites(fireworks) {
 	const sprites = {
-		Fountain: () => Sprite.from("assets/fountain.png"),
+		Fountain: () => Sprite.from("assets/fountain_2.png"),
 		Rocket: () => Sprite.from("assets/rocket.png"),
 	};
 
@@ -19,7 +19,8 @@ function createSprites(fireworks) {
 		spriteFirework.duration = duration;
 		spriteFirework.begin = begin;
 		spriteFirework.stop = begin + duration;
-		spriteFirework.isDone = false;
+		spriteFirework.isAdded = false;
+		spriteFirework.isAnimationDone = false;
 		return spriteFirework;
 	});
 }

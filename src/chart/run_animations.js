@@ -17,6 +17,10 @@ function runRocketExplosion(app, x, y, tint, textures) {
 
 function rocketAnimation(elapsed, sprite, app, explosionTextures) {
 	const { x, y, tint, begin, stop } = sprite;
+	if (!sprite.isAdded && begin < elapsed) {
+		app.stage.addChild(sprite);
+		sprite.isAdded = true;
+	}
 	if (begin < elapsed && elapsed < stop) {
 		sprite.x += sprite.velocity.x / 60;
 		sprite.y += sprite.velocity.y / 60;
@@ -25,23 +29,31 @@ function rocketAnimation(elapsed, sprite, app, explosionTextures) {
 		sprite.isDone = true;
 		const explosion = runRocketExplosion(app, x, y, tint, explosionTextures);
 		app.stage.removeChild(sprite);
-		setTimeout(() => app.stage.removeChild(explosion), 400);
+		setTimeout(() => {
+			app.stage.removeChild(explosion);
+			app.stage.removeChild(sprite);
+		}, 400);
 	}
 }
 
 function fountainAnimation(elapsed, sprite, app, startDate) {
 	const { x, y, tint, begin, duration } = sprite;
+	if (!sprite.isAdded && begin < elapsed) {
+		app.stage.addChild(sprite);
+		sprite.isAdded = true;
+	}
 	if (begin < elapsed && !sprite.isDone) {
 		const nowDate = Date.now();
 		const emitterContainer = new Container();
-    const color = tint.replace("0x", "").toLowerCase()
-		const emitter = buildEmitter( emitterContainer, color);
+		const color = tint.replace("0x", "").toLowerCase();
 		app.stage.addChild(emitterContainer);
+		const emitter = buildEmitter(emitterContainer, color);
 		emitter.updateOwnerPos(x, y);
 		emitter.update((nowDate - startDate) * 0.001);
 		emitter.playOnceAndDestroy();
 		setTimeout(() => {
 			app.stage.removeChild(emitterContainer);
+			app.stage.removeChild(sprite);
 		}, duration);
 		sprite.isDone = true;
 	}
