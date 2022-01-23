@@ -4,10 +4,10 @@
     <Position x="0" y="-384" />
   </Firework>
   <Firework begin="2000" type="Fountain" colour="0x4020FF" duration="4000">
-    <Position x="100" y="768" />
+    <Position x="100" y="-384" />
   </Firework>
   <Firework begin="3000" type="Fountain" colour="0xff5099" duration="3000">
-    <Position x="500" y="768" />
+    <Position x="-100" y="-384" />
   </Firework>
 
   <Firework begin="1000" type="Rocket" colour="0xFF2020" duration="1000">

@@ -6,9 +6,9 @@ function buildEmitter(emitterContainer, color) {
     emitterContainer,
     {
       "lifetime": { "min": 0.5, "max": 0.5 },
-      "frequency": 0.005,
-      "emitterLifetime": 2500,
-      "maxParticles": 10000,
+      "frequency": 0.01,
+      "emitterLifetime": 1000,
+      "maxParticles": 1000,
       "addAtBack": false,
       "behaviors": [
         {

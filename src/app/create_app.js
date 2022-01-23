@@ -1,12 +1,13 @@
 import { Application, Texture } from "pixi.js";
 import animations from "./run_animations";
-import createSprites from "./create_sprites";
+import createSprites from "./sprites";
 
 function buildPixiApplication(width, height, backgroundColor) {
 	return new Application({
 		width,
 		height,
 		backgroundColor,
+		sharedTicker: true,
 		resolution: window.devicePixelRatio || 1,
 	});
 }
@@ -14,11 +15,14 @@ function buildPixiApplication(width, height, backgroundColor) {
 function onAssetsLoaded(app, fireworks) {
 	let fwSprites = createSprites(fireworks);
 	const getTexture = (v) => Texture.from(`Explosion_Sequence_A ${v + 1}.png`);
-	const explosionTextures = [...Array(25).keys()].map((v) => getTexture(v));
-	const maxDuration = fwSprites.reduce(
-		(p, n) => (n.stop > p ? n.stop : p),
-		fwSprites[0].stop
-	);
+	const explosionTextures = [...Array(25).keys()].map((v) => {
+		const texture = getTexture(v);
+		return texture;
+	});
+	// Added 1s to the duration in case a rocket is the last firework, because the explosion takes time.
+	const fireworksDuration =
+		fwSprites.reduce((p, n) => (n.stop > p ? n.stop : p), fwSprites[0].stop) +
+		1000;
 
 	const { rocketAnimation, fountainAnimation } = animations();
 	const startDate = Date.now();
@@ -38,13 +42,12 @@ function onAssetsLoaded(app, fireworks) {
 	};
 
 	let ticker = app.ticker.add(tickerRunner);
-
 	setInterval(() => {
 		elapsed = 0;
-		ticker.remove();
+		ticker.stop();
 		fwSprites = createSprites(fireworks);
-		ticker = app.ticker.add(tickerRunner);
-	}, maxDuration);
+		ticker.start();
+	}, fireworksDuration);
 }
 
 function createPixiApplication(fireworks, width, height, backgroundColor) {
@@ -52,9 +55,11 @@ function createPixiApplication(fireworks, width, height, backgroundColor) {
 	document.body.appendChild(app.view);
 	app.loader
 		.add("spritesheet", "assets/mc.json")
+		.add("explosion", "assets/mc.png")
 		.add("fountain2", "assets/fountain_2.png")
-		.add("rocket", "assets/rocket.png")
+		.add("rocket", "assets/rocket_2.png")
 		.load(() => onAssetsLoaded(app, fireworks));
+	return app;
 }
 
 export default createPixiApplication;
