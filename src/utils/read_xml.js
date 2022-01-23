@@ -33,7 +33,6 @@ async function convertXmlToClasses(xmlFile) {
 		);
 		const parsedFrameworks = fireworks.filter((result) => !!result);
 		const hasErrorInConversion = fireworks.length !== parsedFrameworks.length;
-		console.log(hasErrorInConversion)
 		if (!!hasErrorInConversion) {
 			throw Error;
 		}
