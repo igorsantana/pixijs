@@ -5,10 +5,7 @@ function buildEmitter(emitterContainer, color) {
   return new Emitter(
     emitterContainer,
     {
-      "lifetime": {
-        "min": 0.5,
-        "max": 0.5
-      },
+      "lifetime": { "min": 0.5, "max": 0.5 },
       "frequency": 0.005,
       "emitterLifetime": 2500,
       "maxParticles": 10000,
