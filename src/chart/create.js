@@ -91,16 +91,15 @@ function fountainAnimation(elapsed, sprite, app, startDate) {
 
 function onAssetsLoaded(app, fireworks) {
 	let fwSprites = createSprites(fireworks);
-	app.stage.addChild(...fwSprites);
-
 	const explosionTextures = [...Array(25).keys()].map((v) => Texture.from(`Explosion_Sequence_A ${v + 1}.png`))
 	const maxDuration = fwSprites.reduce((p, n) => (n.stop > p ? n.stop : p), fwSprites[0].stop);
-	let startDate = Date.now()
 	const executeAnimation = {
 		Rocket: (elapsed, sprite) => rocketAnimation(elapsed, sprite, app, explosionTextures),
 		Fountain: (elapsed, sprite) => fountainAnimation(elapsed, sprite, app, startDate)
 	}
-
+	
+	app.stage.addChild(...fwSprites);
+	let startDate = Date.now()
 	let elapsed = 0;
 	const tickerRunner = (dt) => {
 		elapsed += parseInt((dt / 60.0) * 1000);
@@ -110,7 +109,7 @@ function onAssetsLoaded(app, fireworks) {
 	}
 
 	let ticker = app.ticker.add(tickerRunner);
-	
+
 	setInterval(() => {
 		ticker.remove();
 		app.stage.removeChild(...fwSprites)
