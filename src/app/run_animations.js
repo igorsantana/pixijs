@@ -3,26 +3,24 @@ import buildEmitter from "./utils/build_emitter";
 
 function runRocketExplosion(app, x, y, tint, textures) {
 	const explosion = new AnimatedSprite(textures);
-	for (let i = 16; i < 26; i++) {
-		explosion.x = x;
-		explosion.y = y;
-		explosion.tint = tint;
-		explosion.anchor.set(0.5);
-		explosion.rotation = Math.random() * Math.PI;
-		explosion.gotoAndPlay(Math.random() * 27);
-	}
+	explosion.x = x;
+	explosion.y = y;
+	explosion.tint = tint;
+	explosion.anchor.set(0.5);
+	explosion.rotation = Math.random() * Math.PI;
+	explosion.gotoAndPlay(Math.random() * 27);
 	return explosion;
 }
 
-function rocketAnimation(elapsed, sprite, app, explosionTextures) {
+function rocketAnimation(elapsed, sprite, dt, app, explosionTextures) {
 	const { x, y, tint, begin, stop } = sprite;
 	if (!sprite.isAdded && begin < elapsed) {
 		app.stage.addChild(sprite);
 		sprite.isAdded = true;
 	}
 	if (begin < elapsed && elapsed < stop) {
-		sprite.x += Math.ceil(-sprite.velocity.x / 60);
-		sprite.y += Math.ceil(-sprite.velocity.y / 60);
+		sprite.x += Math.round((-sprite.velocity.x / 60) * dt);
+		sprite.y += Math.round((-sprite.velocity.y / 60) * dt);
 	}
 	if (!sprite.isDone && elapsed >= stop) {
 		sprite.isDone = true;
@@ -36,7 +34,7 @@ function rocketAnimation(elapsed, sprite, app, explosionTextures) {
 	}
 }
 
-function fountainAnimation(elapsed, sprite, app, startDate) {
+function fountainAnimation(elapsed, sprite, dt, app, startDate) {
 	const { x, y, tint, begin, duration } = sprite;
 	if (!sprite.isAdded && begin < elapsed) {
 		app.stage.addChild(sprite);

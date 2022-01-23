@@ -14,4 +14,4 @@ function bootstrap(file) {
 		});
 }
 
-bootstrap("fireworks2.xml");
+bootstrap("fireworks.xml");
