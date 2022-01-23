@@ -1,16 +1,15 @@
 import { AnimatedSprite, Container } from "pixi.js";
-import buildEmitter from "../utils/build_emitter";
+import buildEmitter from "./utils/build_emitter";
 
 function runRocketExplosion(app, x, y, tint, textures) {
 	const explosion = new AnimatedSprite(textures);
-	for (let i = 0; i < 25; i++) {
+	for (let i = 16; i < 26; i++) {
 		explosion.x = x;
 		explosion.y = y;
 		explosion.tint = tint;
 		explosion.anchor.set(0.5);
 		explosion.rotation = Math.random() * Math.PI;
 		explosion.gotoAndPlay(Math.random() * 27);
-		app.stage.addChild(explosion);
 	}
 	return explosion;
 }
@@ -22,13 +21,14 @@ function rocketAnimation(elapsed, sprite, app, explosionTextures) {
 		sprite.isAdded = true;
 	}
 	if (begin < elapsed && elapsed < stop) {
-		sprite.x += sprite.velocity.x / 60;
-		sprite.y += sprite.velocity.y / 60;
+		sprite.x += Math.ceil(-sprite.velocity.x / 60);
+		sprite.y += Math.ceil(-sprite.velocity.y / 60);
 	}
 	if (!sprite.isDone && elapsed >= stop) {
 		sprite.isDone = true;
 		const explosion = runRocketExplosion(app, x, y, tint, explosionTextures);
 		app.stage.removeChild(sprite);
+		app.stage.addChild(explosion);
 		setTimeout(() => {
 			app.stage.removeChild(explosion);
 			app.stage.removeChild(sprite);

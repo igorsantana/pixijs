@@ -3,17 +3,21 @@ import { Sprite } from "pixi.js";
 function createSprites(fireworks) {
 	const sprites = {
 		Fountain: () => Sprite.from("assets/fountain_2.png"),
-		Rocket: () => Sprite.from("assets/rocket.png"),
+		Rocket: () => Sprite.from("assets/rocket_2.png"),
 	};
+
+	const xCenter = 512;
+	const yCenter = 384;
 
 	return fireworks.map((firework) => {
 		const spriteFirework = sprites[firework.type]();
-		const { position, type, velocity, colour, duration, begin } = firework;
+		spriteFirework.cacheasBitmap = true;
+		const { position, velocity, colour, duration, begin } = firework;
 		const { x, y } = position;
 		spriteFirework.anchor.set(0.5);
-		spriteFirework.spriteType = type;
-		spriteFirework.x = x;
-		spriteFirework.y = y;
+		spriteFirework.spriteType = firework.type;
+		spriteFirework.x = xCenter + -x;
+		spriteFirework.y = yCenter + -y;
 		spriteFirework.velocity = velocity;
 		spriteFirework.tint = colour;
 		spriteFirework.duration = duration;
