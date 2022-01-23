@@ -1,10 +1,9 @@
-import * as PIXI from "pixi.js";
-import preBuildEmitter from '../utils/build_emitter';
-import { Emitter } from "@pixi/particle-emitter";
+import { Application, Sprite, AnimatedSprite, Texture, Container } from "pixi.js";
+import * as PIXI from 'pixi.js'
 import buildEmitter from "../utils/build_emitter";
 
 function buildPixiApplication(width, height, backgroundColor) {
-	return new PIXI.Application({
+	return new Application({
 		width,
 		height,
 		backgroundColor,
@@ -14,9 +13,9 @@ function buildPixiApplication(width, height, backgroundColor) {
 
 function createSprites(fireworks) {
 	const sprites = {
-		Fountain: () => PIXI.Sprite.from("assets/fountain.png"),
-		Particle: () => PIXI.Sprite.from("assets/particle.png"),
-		Rocket: () => PIXI.Sprite.from("assets/rocket.png"),
+		Fountain: () => Sprite.from("assets/fountain.png"),
+		Particle: () => Sprite.from("assets/particle.png"),
+		Rocket: () => Sprite.from("assets/rocket.png"),
 	};
 
 	return fireworks.map((fw) => {
@@ -39,7 +38,7 @@ function createSprites(fireworks) {
 }
 
 const runRocketExplosion = (app, x, y, tint, textures) => {
-	const explosion = new PIXI.AnimatedSprite(textures);
+	const explosion = new AnimatedSprite(textures);
 	const nArray = [...Array(25).keys()]
 	nArray.forEach(() => {
 		explosion.x = x;
@@ -47,7 +46,6 @@ const runRocketExplosion = (app, x, y, tint, textures) => {
 		explosion.tint = tint;
 		explosion.anchor.set(0.5);
 		explosion.rotation = Math.random() * Math.PI;
-		explosion.scale.set(0.75 + Math.random() * 0.5);
 		explosion.gotoAndPlay(Math.random() * 27);
 		app.stage.addChild(explosion);
 	})
@@ -71,55 +69,60 @@ function rocketAnimation(elapsed, sprite, app, explosionTextures) {
 	}
 }
 
-function fountainAnimation(emitter, elapsed, sprite, app) {
+function fountainAnimation(elapsed, sprite, app, startDate) {
+	const { x, y, tint, begin, duration } = sprite;
+	if (begin < elapsed && !sprite.isDone) {
+		sprite.isDone = true;
+		const nowDate = Date.now()
+		const emitterContainer = new Container();
+		const emitter = buildEmitter(emitterContainer, tint.replace('0x', '').toLowerCase())
+		app.stage.addChild(emitterContainer);
+		emitter.updateOwnerPos(x, y);
+		emitter.update((nowDate - startDate) * 0.001)
+		emitter.playOnceAndDestroy()
+		setTimeout(() => {
+			app.stage.removeChild(emitterContainer)
+		}, duration)
+	}
 
 }
 
+
+
 function onAssetsLoaded(app, fireworks) {
-	const fwSprites = createSprites(fireworks);
+	let fwSprites = createSprites(fireworks);
 	app.stage.addChild(...fwSprites);
-	const explosionTextures = [...Array(25).keys()].map((v) => PIXI.Texture.from(`Explosion_Sequence_A ${v + 1}.png`))
-	const maxDuration = fireworks.reduce((p, n) => (n.stop > p ? n.stop : p), fireworks[0].stop);
-	const emitterContainer = new PIXI.ParticleContainer();
 
-	app.stage.addChild(emitterContainer);
-	const emitter = buildEmitter(emitterContainer)
-	emitter.emit = true;
-
-	const nowDate = Date.now();
+	const explosionTextures = [...Array(25).keys()].map((v) => Texture.from(`Explosion_Sequence_A ${v + 1}.png`))
+	const maxDuration = fwSprites.reduce((p, n) => (n.stop > p ? n.stop : p), fwSprites[0].stop);
+	let startDate = Date.now()
 	const executeAnimation = {
 		Rocket: (elapsed, sprite) => rocketAnimation(elapsed, sprite, app, explosionTextures),
-		Fountain: (elapsed, sprite) => fountainAnimation(emitter, elapsed, sprite, app)
+		Fountain: (elapsed, sprite) => fountainAnimation(elapsed, sprite, app, startDate)
 	}
 
 	let elapsed = 0;
-	const startDate = Date.now()
-
-	app.ticker.add((dt) => {
+	const tickerRunner = (dt) => {
 		elapsed += parseInt((dt / 60.0) * 1000);
 		for (const sprite of fwSprites) {
 			executeAnimation[sprite.spriteType](elapsed, sprite);
-			if (sprite.spriteType == 'Fountain') {
-				if (sprite.begin < elapsed && !sprite.isDone) {
-					const nowDate = Date.now()
-					const { x, y, tint } = sprite;
-					const emitterContainer = new PIXI.ParticleContainer();
-					app.stage.addChild(emitterContainer);
-					console.log(tint.replace('0x', ''))
-					const emitter = buildEmitter(emitterContainer, tint.replace('0x', '').toLowerCase())
-					emitter.updateOwnerPos(x, y);
-					emitter.update((nowDate - startDate) * 0.001)
-					emitter.playOnceAndDestroy(() => {
-						app.stage.removeChild(emitterContainer)
-					})
-					sprite.isDone = true;
-				}
-			}
 		}
-	});
+	}
+
+	let ticker = app.ticker.add(tickerRunner);
+	
+	setInterval(() => {
+		ticker.remove();
+		app.stage.removeChild(...fwSprites)
+		fwSprites = createSprites(fireworks);
+		app.stage.addChild(...fwSprites);
+		elapsed = 0;
+		startDate = Date.now();
+		ticker = app.ticker.add(tickerRunner);
+		console.log('reinicia')
+	}, maxDuration)
+
 }
-
-
 
 function createPixiApplication(fireworks, width, height, backgroundColor) {
 	const app = buildPixiApplication(width, height, backgroundColor);
@@ -133,8 +136,6 @@ function createPixiApplication(fireworks, width, height, backgroundColor) {
 		.load(() => onAssetsLoaded(app, fireworks))
 }
 
-
-
 window.__PIXI_INSPECTOR_GLOBAL_HOOK__ &&
-	window.__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
+	window.__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI });
 export default createPixiApplication;

@@ -68,7 +68,7 @@ function buildEmitter(emitterContainer, color) {
               "list": [
                 {
                   "time": 0,
-                  "value": "ffffff"
+                  "value": "000000"
                 },
                 {
                   "time": 1,
