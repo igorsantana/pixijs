@@ -27,25 +27,27 @@ function onAssetsLoaded(app, fireworks) {
 	const { rocketAnimation, fountainAnimation } = animations();
 	const startDate = Date.now();
 	const executeAnimation = {
-		Rocket: (elapsed, sprite) =>
-			rocketAnimation(elapsed, sprite, app, explosionTextures),
-		Fountain: (elapsed, sprite) =>
-			fountainAnimation(elapsed, sprite, app, startDate),
+		Rocket: (elapsed, sprite, dt) =>
+			rocketAnimation(elapsed, sprite, dt, app, explosionTextures),
+		Fountain: (elapsed, sprite, dt) =>
+			fountainAnimation(elapsed, sprite, dt, app, startDate),
 	};
 
 	let elapsed = 0;
 	const tickerRunner = (dt) => {
-		elapsed += parseInt((dt / 60.0) * 1000);
+		elapsed += (1 / 60) * dt * 1000;
 		fwSprites.forEach((sprite) =>
-			executeAnimation[sprite.spriteType](elapsed, sprite)
+			executeAnimation[sprite.spriteType](elapsed, sprite, dt)
 		);
 	};
 
 	let ticker = app.ticker.add(tickerRunner);
+
 	setInterval(() => {
-		elapsed = 0;
 		ticker.stop();
+		elapsed = 0;
 		fwSprites = createSprites(fireworks);
+		console.log("--------");
 		ticker.start();
 	}, fireworksDuration);
 }
