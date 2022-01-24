@@ -14,11 +14,7 @@ function buildPixiApplication(width, height, backgroundColor) {
 
 function onAssetsLoaded(app, fireworks) {
 	let fwSprites = createSprites(fireworks);
-	const getTexture = (v) => Texture.from(`Explosion_Sequence_A ${v + 1}.png`);
-	const explosionTextures = [...Array(25).keys()].map((v) => {
-		const texture = getTexture(v);
-		return texture;
-	});
+	const explosionTextures =[...Array(26).keys()].map((_, i) =>Texture.from(`Explosion_Sequence_A ${i + 1}.png`));
 	// Added 1s to the duration in case a rocket is the last firework, because the explosion takes time.
 	const fireworksDuration =
 		fwSprites.reduce((p, n) => (n.stop > p ? n.stop : p), fwSprites[0].stop) +

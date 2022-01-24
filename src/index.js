@@ -4,9 +4,7 @@ import createPixiApplication from "./app/create_app";
 let app;
 function bootstrap(file) {
 	fetchFireworksFromXML(`./data/${file}`)
-		.then((fireworks) => {
-			app = createPixiApplication(fireworks, 1024, 768, 0x000);
-		})
+		.then((fireworks) => createPixiApplication(fireworks, 1024, 768, 0x000))
 		.catch((e) => {
 			const errorElement = document.createElement("h1");
 			errorElement.innerText = e;
@@ -14,4 +12,4 @@ function bootstrap(file) {
 		});
 }
 
-bootstrap("fireworks.xml");
+bootstrap("fireworks2.xml");
