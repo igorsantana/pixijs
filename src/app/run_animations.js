@@ -29,7 +29,6 @@ function rocketAnimation(elapsed, sprite, dt, app, explosionTextures) {
 		app.stage.addChild(explosion);
 		setTimeout(() => {
 			app.stage.removeChild(explosion);
-			app.stage.removeChild(sprite);
 		}, 400);
 	}
 }

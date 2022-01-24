@@ -1,6 +1,6 @@
 import { Sprite } from "pixi.js";
 
-function createSprites(fireworks) {
+function createFireworksSprites(fireworks) {
 	const sprites = {
 		Fountain: () => Sprite.from("assets/fountain_2.png"),
 		Rocket: () => Sprite.from("assets/rocket_2.png"),
@@ -29,4 +29,4 @@ function createSprites(fireworks) {
 	});
 }
 
-export default createSprites;
+export default createFireworksSprites;
